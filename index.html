@@ -1,0 +1,449 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="style.css">
+    <title>Calculator</title>
+</head>
+<body>
+
+<div>
+<h1> Calculator </h1>
+<p>(with keyboard support)</p>
+
+</div>
+
+
+<div id="calc">
+
+    <div id="brand-area">
+        <div id="solar"></div>
+        <p>Casio</p>
+    </div>
+    <div id="screen">Numbers</div>
+    <div class="row">
+        <div class="button">7</div>
+        <div class="button">8</div>
+        <div class="button">9</div>
+        <div class="button operator">+</div>
+    </div>
+    <div class="row">
+        <div class="button">4</div>
+        <div class="button">5</div>
+        <div class="button">6</div>
+        <div class="button operator">-</div>
+    </div>
+    <div class="row">
+        <div class="button">1</div>
+        <div class="button">2</div>
+        <div class="button">3</div>
+        <div class="button operator">*</div>
+    </div>
+    <div class="row">
+        <div class="button">0</div>
+        <div class="button operator">.</div>
+        <div class="button operator">=</div>
+        <div class="button operator">/</div>
+    </div>
+    <div class="row">
+        <div class="button" id="clear">Clear</div>
+    </div>
+    <div class="row">
+        <div class="button" id="bspace">Backspace</div>
+    </div>
+
+</div>
+
+
+
+
+
+
+
+
+
+
+    <script>
+        let num1 = undefined;
+        let temp1 = '';
+        let num2 = undefined;
+        let temp2 = '';
+        let oper = undefined;
+        let prev_oper = false;
+        let prev_equal = false;
+        let needsClear = false;
+        const operators = document.querySelectorAll(".operator");
+        const ops = Array.from(operators);
+        const clearButton = document.getElementById('clear');
+
+        const buttons = document.querySelectorAll(".button");
+
+        function add(a,b){
+            return a+b;
+        }
+
+        function subtract(a,b){
+            return a-b;
+        }
+
+        function multiply(a,b){
+            return a*b;
+        }
+
+        function divide(a,b){
+            if (b !== 0){
+                return a/b;
+            }else{
+                return 'Nice try';
+            }
+            
+        }
+
+        function operate(op, a, b){
+            let res =0;
+            if (op == '+'){
+                res = add(a,b);
+            }else if (op == '-'){
+                res = subtract(a,b);
+            }else if (op == '*'){
+                res = multiply(a,b);
+            }else if (op == '/'){
+                res = divide(a,b);
+            }
+            return res;
+        }
+
+        function roundLastDigit(num_str) {
+            let pos = num_str.indexOf('.');
+            let num = 0;
+            let pow = 0;
+            if (pos != -1) {
+                if (num_str.includes('e')){
+                    let exp = num_str.slice(-2,);
+                    
+                    num_str = num_str.slice(0,7);
+                    
+                    num = parseFloat(num_str);
+                    pow = ((13 - 1) - pos) - 1;
+                    num = (num*Math.pow(10,pow));
+                    num = num.toFixed(1);
+                    num = Math.round(num)/10**pow;
+                    num_str = String(num + 'e+'+exp)
+                }
+                num = parseFloat(num_str);
+                pow = ((13 - 1) - pos) - 1;
+                num = (num*Math.pow(10,pow));
+                num = num.toFixed(1);
+                num = Math.round(num)/10**pow;
+            }else{
+                num = parseInt(num_str);
+                num = Math.round(num/10**((num_str.length - 13)+1));
+                num_str = String(num);
+
+            }
+            return String(num);
+        }
+
+
+
+        function numInput(btn){
+            prev_oper = false;
+            prev_equal = false;
+            if (btn.textContent != 'Backspace'){
+                if (num1 == undefined){
+                    if (!temp1.includes('.') || btn.textContent!= '.'){
+                        temp1 += btn.textContent;
+                        if (temp1.length == 13){
+                            temp1 = roundLastDigit(temp1);
+                        }
+                        scr.textContent = temp1;
+                    }
+                }else if (num2 == undefined){
+                    if (!temp2.includes('.') || btn.textContent != '.'){
+                        temp2 += btn.textContent;
+                        if (temp2.length == 13){
+                            temp2 = roundLastDigit(temp2);
+                        }
+                        scr.textContent = temp2;
+                    }
+                }
+            }else{
+                if (temp2 != ''){
+                    
+                    if (temp2.length > 1) {
+                        temp2 = temp2.slice(0,-1);
+                    }
+                    scr.textContent = temp2;
+                }else if (temp1 != ''){
+                    if (num1 != undefined){
+                        temp1 = String(num1);
+                    }
+                       
+                    if (temp1.length > 1) {
+                        temp1 = temp1.slice(0,-1);
+                    }
+                    scr.textContent = temp1;
+                }
+
+            }
+        }
+
+
+
+
+        function numKeyInput(ev){
+            prev_oper = false;
+            prev_equal = false;
+            if (ev.key != "Backspace"){
+                if (num1 == undefined){
+                    if (!temp1.includes('.') || ev.key!= '.'){
+                        temp1 += ev.key;
+                        if (temp1.length == 13){
+                            temp1 = roundLastDigit(temp1);
+                        }
+                        scr.textContent = temp1;
+                    }
+                }else if (num2 == undefined){
+                    if (!temp2.includes('.') || ev.key != '.'){
+                        temp2 += ev.key;
+                        if (temp2.length == 13){
+                            temp2 = roundLastDigit(temp2);
+                        }
+                        scr.textContent = temp2;
+                    }
+                }
+            }else{
+                if (temp2 != ''){
+                    
+                    if (temp2.length > 1) {
+                        temp2 = temp2.slice(0,-1);
+                    }
+                    scr.textContent = temp2;
+                }else if (temp1 != ''){
+                    if (num1 != undefined){
+                        temp1 = String(num1);
+                    }
+                       
+                    if (temp1.length > 1) {
+                        temp1 = temp1.slice(0,-1);
+                    }
+                    scr.textContent = temp1;
+                }
+
+            }
+        }
+
+        function operKeyInput(ev){
+            if(ev.key == 'Enter'){
+                if (!prev_equal && num2!=undefined){
+                    res = operate(oper,num1,num2);
+                    let res_str = String(res);
+                    if (res_str.length >= 13){
+                        res_str = roundLastDigit(res_str);
+                        if (res_str.includes('.')){
+                            res = parseFloat(res_str);
+                        }else{
+                            res = parseInt(res_str);
+                        }
+                    }
+                    scr.textContent = res;
+                    num1 = res ;
+                    num2 = undefined;
+                    temp2 = '';
+                    oper = undefined;
+                    prev_equal = true;
+                    if (res == 'Nice try'){
+                        scr.textContent = 'Nice try';
+                        ops.forEach((item)=> {item.style.backgroundColor = 'red';} );
+                        clearButton.style.backgroundColor = '#00ff00';
+                        needsClear = true;
+                    }
+                }else{
+                    needsClear = true;
+                }
+
+                ops.forEach((item)=> {item.style.backgroundColor = 'bisque';} );
+             
+            
+            }else if (oper == undefined){
+                prev_equal = false;
+                if (ev.key != 'c'){
+                    prev_oper = true;
+                    oper = ev.key;
+                }
+                ops.forEach((item)=> {item.style.backgroundColor = 'bisque';} );
+            } else if (prev_oper){
+                needsClear = true;
+            
+            }else{
+                prev_equal = false;
+                res = operate(oper,num1,num2);
+                scr.textContent = res;
+                num1 = res ;
+                num2 = undefined;
+                temp2 = '';
+                oper = ev.key;
+                prev_oper = true;
+                ops.forEach((item)=> {item.style.backgroundColor = 'bisque';} );
+                
+                if (res == 'Nice try'){
+                        scr.textContent = 'Nice try';
+                        ops.forEach((item)=> {item.style.backgroundColor = 'red';} );
+                        clearButton.style.backgroundColor = '#00ff00';
+                        needsClear = true;
+                    }
+            }
+        }
+
+        function operInput(btn){
+            if(btn.textContent == '='){
+                if (!prev_equal && num2!=undefined){
+                    res = operate(oper,num1,num2);
+                    let res_str = String(res);
+                    if (res_str.length >= 13){
+                        res_str = roundLastDigit(res_str);
+                        if (res_str.includes('.')){
+                            res = parseFloat(res_str);
+                        }else{
+                            res = parseInt(res_str);
+                        }
+                    }
+                    scr.textContent = res;
+                    num1 = res ;
+                    num2 = undefined;
+                    temp2 = '';
+                    oper = undefined;
+                    prev_equal = true;
+                    if (res == 'Nice try'){
+                        scr.textContent = 'Nice try';
+                        ops.forEach((item)=> {item.style.backgroundColor = 'red';} );
+                        clearButton.style.backgroundColor = '#00ff00';
+                        needsClear = true;
+                    }
+                }else{
+                    needsClear = true;
+                }
+                ops.forEach((item)=> {item.style.backgroundColor = 'bisque';} );
+                btn.style.backgroundColor = 'red';
+            }else if (oper == undefined){
+                prev_equal = false;
+                if (btn.textContent != 'Clear'){
+                    prev_oper = true;
+                    oper = btn.textContent;
+                }
+                ops.forEach((item)=> {item.style.backgroundColor = 'bisque';} );
+                btn.style.backgroundColor = 'red';
+            } else if (prev_oper){
+                needsClear = true;
+            
+            }else{
+                // alert("Wrong !");
+                prev_equal = false;
+                res = operate(oper,num1,num2);
+                scr.textContent = res;
+                num1 = res ;
+                num2 = undefined;
+                temp2 = '';
+                oper = btn.textContent;
+                prev_oper = true;
+                ops.forEach((item)=> {item.style.backgroundColor = 'bisque';} );
+                btn.style.backgroundColor = 'red';
+                if (res == 'Nice try'){
+                        scr.textContent = 'Nice try';
+                        ops.forEach((item)=> {item.style.backgroundColor = 'red';} );
+                        clearButton.style.backgroundColor = '#00ff00';
+                        needsClear = true;
+                    }
+            }
+        }
+
+        function clearScreen(btn){
+            num1 = undefined;
+            temp1 = '';
+            num2 = undefined;
+            temp2 = '';
+            oper = undefined;
+            res = undefined;
+            prev_equal = false;
+            prev_oper = false;
+            scr.textContent = 0;
+            ops.forEach((item)=> {item.style.backgroundColor = 'bisque';} );
+            clearButton.style.backgroundColor = "white";
+            needsClear = false;
+        }
+
+
+        function registerNumber(){
+            if (temp1 != ''){
+                num1 = parseFloat(temp1);
+                if (parseInt(temp1) == num1) {
+                    num1 = parseInt(temp1);
+                }
+                temp1= '';
+            }else if (temp2 != ''){
+                num2 = parseFloat(temp2);
+                if (parseInt(temp2) == num2) {
+                    num2 = parseInt(temp2);
+                }
+                temp2 = '';
+            }
+        }
+
+
+        function errorState(){
+            scr.textContent = 'Error';
+            ops.forEach((item)=> {item.style.backgroundColor = 'red';} );
+            clearButton.style.backgroundColor = '#00ff00';
+            needsClear = true;
+        }
+
+        // keyboard event listener
+        document.addEventListener("keydown", (event) => {
+            console.log(event.key);
+            if ((! isNaN(event.key) || event.key == '.' || event.key == 'Backspace') && needsClear==false){
+                    numKeyInput(event);
+                }else{
+                    
+                    registerNumber();
+                    if(event.key == 'c'){
+                        clearScreen(event);
+                    }
+                    if (!needsClear){
+                        operKeyInput(event);
+                    }
+                } 
+                if ((needsClear && event.key != 'c')){
+                    errorState();
+                }
+                       
+            });
+
+
+
+        let scr = document.getElementById("screen");
+   
+        scr.textContent = operate(oper, num1, num2);
+
+        buttons.forEach((btn) => {
+            btn.addEventListener("click", () => {
+                if ((! isNaN(btn.textContent) || btn.textContent == '.' || btn.textContent == 'Backspace') && needsClear==false){
+                    numInput(btn);
+                }else{
+                    registerNumber();
+                    if(btn.textContent == 'Clear'){
+                        clearScreen(btn);
+                    }else if (!needsClear){
+                        operInput(btn);
+                    }
+                } 
+                if ((needsClear && btn.textContent != 'Clear')){
+                    errorState(btn);
+                }
+                       
+            }
+        )});
+        
+    </script>
+</body>
+</html>
